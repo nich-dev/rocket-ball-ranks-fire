@@ -10,3 +10,6 @@ typings/
 
 # Node.js dependency directory
 node_modules/
+
+# Configs
+src/confic/config-local.ts
