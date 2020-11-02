@@ -3,6 +3,12 @@ const functions = require('firebase-functions');
 
 // The Firebase Admin SDK to access Cloud Firestore.
 const admin = require('firebase-admin');
+
+// Configs for testing
+import { config } from './config/config-local';
+
+// Headless browser for values
+const puppeteer = require('puppeteer');
 admin.initializeApp();
 
 // Take the text parameter passed to this HTTP endpoint and insert it into 
@@ -32,4 +38,27 @@ exports.makeUppercase = functions.firestore.document('/messages/{documentId}')
   // writing to Cloud Firestore.
   // Setting an 'uppercase' field in Cloud Firestore document returns a Promise.
   return snap.ref.set({uppercase}, {merge: true});
+});
+// Take the name parameter and grabs the html from stats
+exports.addRanks = functions.https.onRequest(async (req: any, res: any) => {
+    // Grab the name parameter.
+    // const username = req.query.name;
+    // Get the browser request
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    // await page.goto(`${config.base_url}${config.base_path}${username}/${config.base_appendix}`);
+    await page.goto(`${config.test_url}`);
+    console.log(`Went to ${config.test_url}`);
+    // wait for window to have user object context
+    const watchDog = page.waitForFunction('window.__INITIAL_STATE__ != undefined');
+    await watchDog;
+    // evaluate the user details
+    let userDetails = await page.evaluate(() => {
+        const w: any = window;
+        return w.__INITIAL_STATE__;
+    });
+
+    await browser.close();
+    // Send back a message with json found
+    res.json({result: userDetails});
 });
