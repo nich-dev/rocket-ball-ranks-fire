@@ -7,6 +7,9 @@ const admin = require('firebase-admin');
 // Configs for testing
 import { config } from './config/config-local';
 
+// Models
+import { StatsModels } from './models';
+
 // Headless browser for values
 const puppeteer = require('puppeteer');
 admin.initializeApp();
