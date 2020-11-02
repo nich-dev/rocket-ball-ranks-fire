@@ -71,8 +71,8 @@ export interface Playlist {
 }
 
 export interface Account {
-    username: string;
     id: string;
+    username: string;
     avatar: string;
     playlists: Playlist[];
     timestamp?: number;

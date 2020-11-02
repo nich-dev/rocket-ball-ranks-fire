@@ -31,8 +31,8 @@ function getPlaylists(initialState: any): Playlist[] {
 export function initialStateToAccount(initialState: any): Account {
     const userInfo = getProfile(initialState).platformInfo;
     return {
-        username: userInfo.platformUserHandle,
         id: userInfo.platformUserIdentifier,
+        username: userInfo.platformUserHandle,
         avatar: userInfo.avatarUrl,
         playlists: getPlaylists(initialState),
         timestamp: Date.now()
