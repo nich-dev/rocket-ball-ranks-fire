@@ -4,11 +4,9 @@ const functions = require('firebase-functions');
 // The Firebase Admin SDK to access Cloud Firestore.
 const admin = require('firebase-admin');
 
-// Configs for testing
+// Custom imports
 import { config } from './config/config-local';
-
-// Models
-import { StatsModels } from './models';
+import { initialStateToAccount } from './mapper';
 
 // Headless browser for values
 const puppeteer = require('puppeteer');
@@ -60,8 +58,10 @@ exports.addRanks = functions.https.onRequest(async (req: any, res: any) => {
         const w: any = window;
         return w.__INITIAL_STATE__;
     });
-
+    // close down the browser
     await browser.close();
+    // map details to schema
+    const account = initialStateToAccount(userDetails);
     // Send back a message with json found
-    res.json({result: userDetails});
+    res.json(account);
 });
