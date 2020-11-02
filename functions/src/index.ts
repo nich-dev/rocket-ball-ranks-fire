@@ -43,12 +43,12 @@ exports.makeUppercase = functions.firestore.document('/messages/{documentId}')
 // Take the name parameter and grabs the html from stats
 exports.addRanks = functions.https.onRequest(async (req: any, res: any) => {
     // Grab the name parameter.
-    // const username = req.query.name;
+    const username = req.query.name;
     // Get the browser request
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
-    // await page.goto(`${config.base_url}${config.base_path}${username}/${config.base_appendix}`);
-    await page.goto(`${config.test_url}`);
+    await page.goto(`${config.base_url}${config.base_path}${username}/${config.base_appendix}`);
+    // await page.goto(`${config.test_url}`); // for testing
     console.log(`Went to ${config.test_url}`);
     // wait for window to have user object context
     const watchDog = page.waitForFunction('window.__INITIAL_STATE__ != undefined');
@@ -62,6 +62,10 @@ exports.addRanks = functions.https.onRequest(async (req: any, res: any) => {
     await browser.close();
     // map details to schema
     const account = initialStateToAccount(userDetails);
+    const upsert = await admin.firestore().collection('accounts').doc(account.id).set(account);
+    console.log(upsert);
     // Send back a message with json found
-    res.json(account);
+    res.json({
+      account: account
+    });
 });
