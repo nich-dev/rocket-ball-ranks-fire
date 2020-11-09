@@ -21,7 +21,6 @@ exports.addRanks = functions.https.onRequest(async (req: any, res: any) => {
     const page = await browser.newPage();
     await page.goto(`${config.base_url}${config.base_path}${username}/${config.base_appendix}`);
     // await page.goto(`${config.test_url}`); // for testing
-    console.log(`Went to ${config.test_url}`);
     // wait for window to have user object context
     const watchDog = page.waitForFunction('window.__INITIAL_STATE__ != undefined');
     await watchDog;
