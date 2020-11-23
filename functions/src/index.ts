@@ -6,6 +6,7 @@ const admin = require('firebase-admin');
 
 // Custom imports
 import { config } from './config/config-local';
+import { ADMINID } from './config/config';
 import { initialStateToAccount } from './mapper';
 
 // Headless browser for values
@@ -39,4 +40,20 @@ exports.addRanks = functions.https.onRequest(async (req: any, res: any) => {
     res.json({
       account: account
     });
+});
+
+exports.turnToCow = functions.https.onRequest(async (req: any, res: any) => {
+  const tokenId = req.get('Authorization').split('Bearer ')[1];
+  const uid = req.query.id;
+  return admin.auth().verifyIdToken(tokenId)
+    .then((decoded: any) => {
+      if (decoded.uid === ADMINID) {
+        admin.auth().setCustomUserClaims(uid, { isCow: true }).then(() => {
+          // The new custom claims will propagate to the user's ID token the
+          // next time a new one is issued.
+        });
+      }
+      return res.status(200).send('Success');
+    })
+    .catch((err: any) => res.status(401).send(err));
 });
