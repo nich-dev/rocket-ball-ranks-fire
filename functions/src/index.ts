@@ -42,6 +42,38 @@ exports.addRanks = functions.https.onRequest(async (req: any, res: any) => {
     });
 });
 
+exports.updateRanks = functions.https.onCall(async (data: any, context: any) => {
+  const allowed = context.auth.token.isCow || false;
+  if (allowed) {
+    // Grab the name parameter.
+    const username = data.name;
+    // Get the browser request
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.goto(`${config.base_url}${config.base_path}${username}/${config.base_appendix}`);
+    // await page.goto(`${config.test_url}`); // for testing
+    // wait for window to have user object context
+    const watchDog = page.waitForFunction('window.__INITIAL_STATE__ != undefined');
+    await watchDog;
+    // evaluate the user details
+    let userDetails = await page.evaluate(() => {
+        const w: any = window;
+        return w.__INITIAL_STATE__;
+    });
+    // close down the browser
+    await browser.close();
+    // map details to schema
+    const account = initialStateToAccount(userDetails);
+    const upsert = await admin.firestore().collection('accounts').doc(account.id).set(account);
+    console.log(upsert);
+    return {
+      account: account
+    };
+  } else {
+    return { error: 'Not allowed'};
+  }
+});
+
 exports.turnToCow = functions.https.onRequest(async (req: any, res: any) => {
   const tokenId = req.get('Authorization').split('Bearer ')[1];
   const uid = req.query.id;
