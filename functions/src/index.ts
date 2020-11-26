@@ -51,7 +51,10 @@ exports.updateRanks = functions.https.onCall(async (data: any, context: any) => 
     const username = data.name;
     console.log(`updating for ${username}`);
     // Get the browser request
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox' ]
+    });
     console.log('launching browser');
     const page = await browser.newPage();
     console.log('opening tab');
