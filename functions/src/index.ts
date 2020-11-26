@@ -52,9 +52,12 @@ exports.updateRanks = functions.https.onCall(async (data: any, context: any) => 
     console.log(`updating for ${username}`);
     // Get the browser request
     const browser = await puppeteer.launch();
+    console.log('launching browser');
     const page = await browser.newPage();
-    console.log(`${config.base_url}${config.base_path}${username}/${config.base_appendix}`);
-    await page.goto(`${config.base_url}${config.base_path}${username}/${config.base_appendix}`);
+    console.log('opening tab');
+    const url = `${config.base_url}${config.base_path}${username}/${config.base_appendix}`;
+    console.log(`navigating to ${url}`);
+    await page.goto(url, { timeout: 25000 } );
     // await page.goto(`${config.test_url}`); // for testing
     // wait for window to have user object context
     const watchDog = page.waitForFunction('window.__INITIAL_STATE__ != undefined');
@@ -70,6 +73,7 @@ exports.updateRanks = functions.https.onCall(async (data: any, context: any) => 
     await browser.close();
     // map details to schema
     const account = initialStateToAccount(userDetails);
+    console.log('converted user details');
     const upsert = await admin.firestore().collection('accounts').doc(account.id).set(account);
     console.log('uploaded to firestore');
     console.log(upsert);
