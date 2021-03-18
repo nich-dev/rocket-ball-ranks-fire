@@ -3,5 +3,3 @@ export const JSON_KEYS = {
     profiles: 'standardProfiles',
     playlistType: 'playlist'
 }
-
-export const ADMINID = 'jLdSwOBJYbh8oFv7vuATyGMWBFN2';

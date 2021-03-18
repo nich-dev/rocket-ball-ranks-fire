@@ -6,7 +6,7 @@ const admin = require('firebase-admin');
 
 // Custom imports
 import { config } from './config/config-local';
-import { ADMINID } from './config/config';
+import { ADMINID } from './config/config-local';
 import { initialStateToAccount } from './mapper';
 
 // Headless browser for values
@@ -60,8 +60,8 @@ exports.updateRanks = functions.https.onCall(async (data: any, context: any) => 
     console.log('opening tab');
     const url = `${config.base_url}${config.base_path}${username}/${config.base_appendix}`;
     console.log(`navigating to ${url}`);
-    await page.goto(url, { timeout: 25000 } );
-    // await page.goto(`${config.test_url}`); // for testing
+    // await page.goto(url, { timeout: 25000 } );
+    await page.goto(`${config.test_url}`); // for testing
     // wait for window to have user object context
     const watchDog = page.waitForFunction('window.__INITIAL_STATE__ != undefined');
     await watchDog;
